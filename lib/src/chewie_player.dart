@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:screen/screen.dart';
 import 'package:video_player/video_player.dart';
+import 'package:auto_orientation/auto_orientation.dart';
+
 
 typedef Widget ChewieRoutePageBuilder(
     BuildContext context,
@@ -121,19 +123,18 @@ class ChewieState extends State<Chewie> {
   }
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
-    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+    // final isAndroid = Theme.of(context).platform == TargetPlatform.android;
     final TransitionRoute<Null> route = PageRouteBuilder<Null>(
       settings: RouteSettings(isInitialRoute: false),
       pageBuilder: _fullScreenRoutePageBuilder,
     );
 
     SystemChrome.setEnabledSystemUIOverlays([]);
-    if (isAndroid) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-    }
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
 
     if (!widget.controller.allowedScreenSleep) {
       Screen.keepOn(true);
@@ -150,8 +151,7 @@ class ChewieState extends State<Chewie> {
 
     SystemChrome.setEnabledSystemUIOverlays(
         widget.controller.systemOverlaysAfterFullScreen);
-    SystemChrome.setPreferredOrientations(
-        widget.controller.deviceOrientationsAfterFullScreen);
+    AutoOrientation.portraitUpMode();
   }
 }
 
@@ -189,9 +189,6 @@ class ChewieController extends ChangeNotifier {
     this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
     this.deviceOrientationsAfterFullScreen = const [
       DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
     ],
     this.routePageBuilder = null,
   }) : assert(videoPlayerController != null,
